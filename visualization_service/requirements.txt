@@ -1,0 +1,10 @@
+Flask==3.0.0
+flask_cors==4.0.0
+numpy==1.25.2
+opencv_python==4.8.0.76
+PyYAML==6.0.1
+python-time
+redis
+multiprocess
+jsons
+random2

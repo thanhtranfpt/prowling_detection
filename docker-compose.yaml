@@ -1,0 +1,62 @@
+version: '3'
+
+
+services:
+
+    redisedge:
+        container_name: redisedge
+        image: redis
+        ports:
+            - 63790:6379
+
+    camera_service:
+        container_name: camera_service
+        build: ./camera_service
+        image: camera_service:prowling_detection
+        depends_on:
+            - redisedge
+        volumes:
+            - ./camera_service:/app
+        command: ['python', 'main.py']
+
+    tracking_service:
+        container_name: tracking_service
+        build: ./tracking_service
+        image: tracking_service:prowling_detection
+        depends_on:
+            - redisedge
+            - camera_service
+        volumes:
+            - ./tracking_service:/app
+        command: ['python', 'main.py']
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          device_ids: ['0']
+                          capabilities: [gpu, utility, compute, video]
+
+    business_service:
+        container_name: business_service
+        build: ./business_service
+        image: business_service:prowling_detection
+        depends_on:
+            - redisedge
+            - tracking_service
+        volumes:
+            - ./business_service:/app
+        command: ['python', 'main.py']
+
+    visualization_service:
+        container_name: visualization_service
+        build: ./visualization_service
+        image: visualization_service:prowling_detection
+        depends_on:
+            - redisedge
+            - business_service
+        volumes:
+            - ./visualization_service:/app
+        ports:
+            - 5000:5000
+        command: ['python', 'app.py']

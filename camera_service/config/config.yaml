@@ -1,0 +1,24 @@
+CAMERAS:
+  - id: cam_1
+    rtsp: https://hls.tuoitre.vn/tuoitre/471584752817336320/2023/7/4/hai-nhom-ho-chien-nhau-168844258200332526964.mp4
+  - id: camera_2
+    rtsp: https://videos.dailymail.co.uk/preview/mol/2018/04/02/4810396619590840832/636x382_MP4_4810396619590840832.mp4
+
+# Running Environment:
+NUM_THREADS: 2
+envs_list:
+  - My laptop
+  - Company server
+env_selected: 1  #----- Note: index from 1.
+
+# Frame:
+CAMERA_FPS: 25
+NUM_FRAMES_SKIP: 1
+resized_height: 360
+resized_width: 640
+
+# Redis Server:
+REDIS_HOSTNAME: localhost
+REDIS_PORT: 6379
+STREAM_MAXLEN: 1
+

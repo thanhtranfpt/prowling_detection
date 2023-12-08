@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualization Configuration</title>
+
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+
+        .view-demo-button {
+            display: inline-block; /* Ensure the link behaves as a block */
+            background-color: #4caf50; /* Green color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none; /* Remove underlines from the link */
+            text-align: center; /* Center the link content */
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .view-demo-button:hover {
+            background-color: #45a049; /* Darker green color on hover */
+        }
+
+    </style>
+    
+</head>
+<body>
+    <h1>Configure visualization settings</h1>
+    <form id="visualization_form" action="/config-visualization" method="POST">
+        <label for="FLASK_HOSTNAME">FLASK_HOSTNAME:</label>
+        <input type="text" id="FLASK_HOSTNAME" name="FLASK_HOSTNAME"><br><br>
+
+        <label for="FLASK_PORT">FLASK_PORT:</label>
+        <input type="number" id="FLASK_PORT" name="FLASK_PORT"><br><br>
+
+        <label for="demo_height">demo_height:</label>
+        <input type="number" id="demo_height" name="demo_height"><br><br>
+
+        <label for="demo_width">demo_width:</label>
+        <input type="number" id="demo_width" name="demo_width"><br><br>
+
+        <input type="submit" value="Save">
+    </form>
+
+    <label> Others: </label>
+    <span><a href="/config-camera" target="_blank" class="view-demo-button" style="font-size: 14px;">Config camera</a></span>
+    <span><a href="/config-redis" target="_blank" class="view-demo-button" style="font-size: 14px;">Config Redis Server </a></span>
+    <span><a href="/config-env" target="_blank" class="view-demo-button" style="font-size: 14px;">Config running environment</a></span>
+
+    <div id="result" style="margin-top: 50px; "></div>
+
+    <div class="container">
+        <a href="/demo" target="_blank" class="view-demo-button">START PROGRAM</a>
+    </div>
+
+
+    <script>
+        document.getElementById('visualization_form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get values from form:
+            var FLASK_HOSTNAME = document.getElementById('FLASK_HOSTNAME').value;
+            var FLASK_PORT = document.getElementById('FLASK_PORT').value;
+            var demo_height = document.getElementById('demo_height').value;
+            var demo_width = document.getElementById('demo_width').value;
+
+            var message = {
+                'FLASK_HOSTNAME': FLASK_HOSTNAME,
+                'FLASK_PORT': FLASK_PORT,
+                'demo_height': demo_height,
+                'demo_width': demo_width
+            }
+            // Send a POST request to the server using the Fetch API
+            fetch('/config-visualization', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                // Process the response from the server and display it in an element with ID "result"
+                if (data["status_code"] === 1) {
+                    document.getElementById('result').style.color = 'green';
+                }
+                else {
+                    document.getElementById('result').style.color = 'red';
+                }
+
+                document.getElementById('result').innerHTML = 
+                                        "<p> " + data["message"] + "</p>" ;
+
+            })
+            .catch(function(error) {
+                console.error('ERROR: ', error);
+            });
+        });
+    </script>
+
+</body>
+</html>

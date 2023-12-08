@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Running Environment Configuration</title>
+
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+
+        .view-demo-button {
+            display: inline-block; /* Ensure the link behaves as a block */
+            background-color: #4caf50; /* Green color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none; /* Remove underlines from the link */
+            text-align: center; /* Center the link content */
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .view-demo-button:hover {
+            background-color: #45a049; /* Darker green color on hover */
+        }
+
+    </style>
+    
+</head>
+<body>
+    <h1>Configure running environment settings</h1>
+    <form id="env_form" action="/config-env" method="POST">
+        <label for="NUM_THREADS">NUM_THREADS:</label>
+        <input type="number" id="NUM_THREADS" name="NUM_THREADS"><br><br>
+
+        <label>Choose running environment:</label>
+        <input type="radio" id="my_laptop" name="environment" value="1">
+        <label for="my_laptop">My laptop</label>
+        <input type="radio" id="company_server" name="environment" value="2">
+        <label for="company_server">Company server</label>
+        <br><br>
+
+        <label for="envs_list">envs_list:</label>
+        <input type="text" id="envs_list" name="envs_list"><br><br>
+
+        <input type="submit" value="Save">
+    </form>
+
+    <label> Others: </label>
+    <span><a href="/config-redis" target="_blank" class="view-demo-button" style="font-size: 14px;">Configure Redis Server </a></span>
+    <span><a href="/config-camera" target="_blank" class="view-demo-button" style="font-size: 14px;">Configure camera settings</a></span>
+
+    <div id="result" style="margin-top: 50px; "></div>
+
+    <div class="container">
+        <a href="/demo" target="_blank" class="view-demo-button">START PROGRAM</a>
+    </div>
+
+
+    <script>
+        document.getElementById('env_form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get values from form:
+            var NUM_THREADS = document.getElementById('NUM_THREADS').value;
+            var env_selected = getSelectedEnvironment();
+            var envs_list = document.getElementById('envs_list').value;
+
+            var message = {
+                'NUM_THREADS': NUM_THREADS,
+                'env_selected': env_selected,
+                'envs_list': envs_list
+            }
+            // Send a POST request to the server using the Fetch API
+            fetch('/config-env', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                // Process the response from the server and display it in an element with ID "result"
+                if (data["status_code"] === 1) {
+                    document.getElementById('result').style.color = 'green';
+                }
+                else {
+                    document.getElementById('result').style.color = 'red';
+                }
+
+                document.getElementById('result').innerHTML = 
+                                        "<p> " + data["message"] + "</p>" ;
+
+            })
+            .catch(function(error) {
+                console.error('ERROR: ', error);
+            });
+        });
+
+
+
+        // Retrieve the selected value from a set of radio buttons:
+
+        function getSelectedEnvironment() {
+            var selectedEnvironment;
+            var environmentOptions = document.getElementsByName("environment");
+
+            for (var i = 0; i < environmentOptions.length; i++) {
+                if (environmentOptions[i].checked) {
+                    selectedEnvironment = environmentOptions[i].value;
+                    break; // Exit the loop when a checked option is found
+                }
+            }
+
+
+            return selectedEnvironment; // Return the selected environment
+
+            // if (selectedEnvironment) {
+            //     alert("Selected environment: " + selectedEnvironment);
+            // } else {
+            //     alert("Please select an environment.");
+            // }
+        }
+
+
+    </script>
+
+</body>
+</html>

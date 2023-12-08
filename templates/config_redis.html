@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redis Server Configuration</title>
+
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+    
+        h1 {
+            color: #333;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            }
+
+        .view-demo-button {
+            display: inline-block; /* Ensure the link behaves as a block */
+            background-color: #4caf50; /* Green color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none; /* Remove underlines from the link */
+            text-align: center; /* Center the link content */
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .view-demo-button:hover {
+            background-color: #45a049; /* Darker green color on hover */
+        }
+
+    </style>
+    
+</head>
+<body>
+    <h1>Configure redis server settings</h1>
+    <form id="redis_form" action="/config-redis" method="POST">
+        <label for="REDIS_HOSTNAME">REDIS_HOSTNAME:</label>
+        <input type="text" id="REDIS_HOSTNAME" name="REDIS_HOSTNAME"><br><br>
+
+        <label for="REDIS_PORT">REDIS_PORT:</label>
+        <input type="number" id="REDIS_PORT" name="REDIS_PORT"><br><br>
+
+        <label for="STREAM_MAXLEN">STREAM_MAXLEN:</label>
+        <input type="number" id="STREAM_MAXLEN" name="STREAM_MAXLEN"><br><br>
+
+        <input type="submit" value="Save">
+    </form>
+
+    <label> Others: </label>
+    <span><a href="/config-camera" target="_blank" class="view-demo-button" style="font-size: 14px;">Config camera</a></span>
+    <span><a href="/config-env" target="_blank" class="view-demo-button" style="font-size: 14px;">Config running environment</a></span>
+
+    <div id="result" style="margin-top: 50px; "></div>
+
+    <div class="container">
+        <a href="/demo" target="_blank" class="view-demo-button">START PROGRAM</a>
+    </div>
+
+
+    <script>
+        document.getElementById('redis_form').addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            // Get values from form:
+            var REDIS_HOSTNAME = document.getElementById('REDIS_HOSTNAME').value;
+            var REDIS_PORT = document.getElementById('REDIS_PORT').value;
+            var STREAM_MAXLEN = document.getElementById('STREAM_MAXLEN').value;
+
+            var message = {
+                'REDIS_HOSTNAME': REDIS_HOSTNAME,
+                'REDIS_PORT': REDIS_PORT,
+                'STREAM_MAXLEN': STREAM_MAXLEN
+            }
+            // Send a POST request to the server using the Fetch API
+            fetch('/config-redis', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(message),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                // Process the response from the server and display it in an element with ID "result"
+                if (data["status_code"] === 1) {
+                    document.getElementById('result').style.color = 'green';
+                }
+                else {
+                    document.getElementById('result').style.color = 'red';
+                }
+
+                document.getElementById('result').innerHTML = 
+                                        "<p> " + data["message"] + "</p>" ;
+
+            })
+            .catch(function(error) {
+                console.error('ERROR: ', error);
+            });
+        });
+    </script>
+
+</body>
+</html>

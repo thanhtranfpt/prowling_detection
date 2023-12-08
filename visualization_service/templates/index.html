@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualization Service</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 660px); /* Adjust column size as desired, e.g.: minmax(300px, 1fr) */
+            gap: 40px; /* Distance between cameras */
+            justify-content: center; /* Center horizontally */
+            align-content: center; /* Center vertically */
+        }
+        .camera {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Camera Streams</h1>
+    <div class="grid-container">
+        {% for camera_id in camera_ids %}
+        <div class="camera">
+            <h2>Camera: {{ camera_id }}</h2>
+            <img src="{{ url_for('video', camera_id=camera_id) }}" alt="Camera Stream">
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
